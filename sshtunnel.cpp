@@ -2,6 +2,8 @@
 #include <QProcess>
 #include <QThread>
 
+Q_LOGGING_CATEGORY(ssh, "sshtunnel")
+
 /*!
  * \brief SShTunnel::SShTunnel
  * \param user
@@ -12,7 +14,7 @@
  * prompting for password.
  */
 
-SShTunnel::SShTunnel(const QString& user, const QString& host, int port)
+SShTunnel::SShTunnel(const QString &user, const QString &host, const int port)
 {
     m_ssh = new QProcess();
     m_ssh->setProgram("ssh");
@@ -28,8 +30,8 @@ SShTunnel::~SShTunnel()
 
 static bool waitForPortOpenning(int port)
 {
-    const int waitInterval{50};  // ms
-    const int waitLimit{20000};  // ms
+    const unsigned int waitInterval{50};  // ms
+    const unsigned int waitLimit{20000};  // ms
     QProcess netstat;
     netstat.setProgram("netstat");
     netstat.setArguments({"-tln"});
@@ -38,7 +40,7 @@ static bool waitForPortOpenning(int port)
     grep.setArguments({QString(":%1").arg(port)});
     netstat.setStandardOutputProcess(&grep);
     // if socket is listening grep will return 0
-    int waited{};
+    unsigned int waited = 0;
     do {
         QThread::msleep(waitInterval);  // wait at least a bit
         waited += waitInterval;
@@ -48,14 +50,14 @@ static bool waitForPortOpenning(int port)
         grep.start();
         grep.waitForFinished();
     } while (grep.exitCode() != 0);
-    qDebug("Port opened in %dms", waited);
+    qCDebug(ssh, "Port opened in %dms", waited);
     return true;
 }
 
-bool SShTunnel::open(int localPort, const QString& remoteAddress, int remotePort)
+bool SShTunnel::open(const int localPort, const QString &remoteAddress, const int remotePort)
 {
     if (m_ssh->state() != QProcess::NotRunning) {
-        qWarning("ssh process is already running");
+        qCWarning(ssh, "ssh process is already running");
         return false;
     }
 
@@ -64,9 +66,9 @@ bool SShTunnel::open(int localPort, const QString& remoteAddress, int remotePort
     m_ssh->setArguments(m_sshArgs);
 
     m_ssh->start();
-    qDebug("starting ssh");
+    qCDebug(ssh, "starting ssh");
     if (!m_ssh->waitForStarted(50)) {
-        qCritical("Failed to start ssh");
+        qCCritical(ssh, "Failed to start ssh");
         return false;
     }
 

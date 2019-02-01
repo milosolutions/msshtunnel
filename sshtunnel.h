@@ -9,9 +9,9 @@ class QProcess;
 class SShTunnel
 {
  public:
-    SShTunnel(const QString& user, const QString& host, int port);
+    SShTunnel(const QString &user, const QString &host, const int port);
     ~SShTunnel();
-    bool open(int localPort, const QString& remoteAddress, int remotePort);
+    bool open(const int localPort, const QString &remoteAddress, const int remotePort);
     void close();
 
  private:

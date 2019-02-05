@@ -1,6 +1,8 @@
 #include "sshtunnel.h"
 #include <QProcess>
 #include <QThread>
+#include <QDebug>
+#include <QLoggingCategory>
 
 Q_LOGGING_CATEGORY(ssh, "sshtunnel")
 
@@ -14,12 +16,17 @@ Q_LOGGING_CATEGORY(ssh, "sshtunnel")
  * prompting for password.
  */
 
-SShTunnel::SShTunnel(const QString &user, const QString &host, const int port)
+SShTunnel::SShTunnel(const SShConfig& config) :
+    m_config(config),
+    m_localPort(-1),
+    m_remotePort(-1)
 {
+    m_config = config;
     m_ssh = new QProcess();
     m_ssh->setProgram("ssh");
     // connection parameters and prepare for forwading option
-    m_sshArgs << QString("%1@%2").arg(user).arg(host) << "-p" << QString::number(port) << "-nNTL";
+    m_sshArgs << QString("%1@%2").arg(m_config.user).arg(m_config.host)
+              << "-p" << QString::number(m_config.port) << "-nNTL";
 }
 
 SShTunnel::~SShTunnel()
@@ -56,6 +63,9 @@ static bool waitForPortOpenning(int port)
 
 bool SShTunnel::open(const int localPort, const QString &remoteAddress, const int remotePort)
 {
+    m_remotePort = remotePort;
+    m_localPort = localPort;
+    m_remoteAddress = remoteAddress;
     if (m_ssh->state() != QProcess::NotRunning) {
         qCWarning(ssh, "ssh process is already running");
         return false;
@@ -83,4 +93,28 @@ void SShTunnel::close()
         m_sshArgs.removeLast();
         m_ssh->waitForFinished(50);
     }
+}
+
+SShConfig SShTunnel::config() const
+{
+    Q_ASSERT(m_ssh->state() == QProcess::Running);
+    return m_config;
+}
+
+
+int SShTunnel::localPort() const
+{
+    Q_ASSERT(m_ssh->state() == QProcess::Running);
+    return m_localPort;
+}
+
+QString SShTunnel::remoteAddress() const
+{
+    Q_ASSERT(m_ssh->state() == QProcess::Running);
+    return m_remoteAddress;
+}
+
+int SShTunnel::remotePort() const
+{
+    return m_remotePort;
 }

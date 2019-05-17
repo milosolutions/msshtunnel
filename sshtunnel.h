@@ -28,12 +28,12 @@ class SShTunnel
     int remotePort() const;
 
  private:
-    QProcess* m_ssh;
+    QProcess* m_ssh = nullptr;
     SShConfig m_config;
     QStringList m_sshArgs;
-    int m_localPort;
+    int m_localPort = -1;
     QString m_remoteAddress;
-    int m_remotePort;
+    int m_remotePort = -1;
 };
 
 #endif  // SSHTUNNEL_H

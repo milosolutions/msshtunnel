@@ -7,14 +7,14 @@ project(msshtunnel
 
 find_package(Qt5 COMPONENTS REQUIRED Core)
 
-set(SOURCES msshtunnel.h msshtunnel.cpp)
+set(SOURCES sshtunnel.h sshtunnel.cpp)
 
 set(OTHER_FILES README.md msshtunnel.doxyfile)
 
 add_library(msshtunnel OBJECT ${SOURCES} ${OTHER_FILES})
 
 # Defines
-target_compile_definitions(memailsystem PUBLIC MSSHTUNNEL_LIB)
+target_compile_definitions(msshtunnel PUBLIC MSSHTUNNEL_LIB)
 
 target_include_directories(msshtunnel
   PUBLIC

@@ -1,3 +1,6 @@
+if (POLICY CMP0048)
+  cmake_policy(SET CMP0048 NEW)
+endif ()
 
 project(msshtunnel
   VERSION 0.0.1
@@ -26,5 +29,4 @@ target_link_libraries(msshtunnel
   Qt5::Core
 )
 
-message("MSshTunnel: missing unit test!")
-#add_subdirectory(tst_msshtunnel)
+add_subdirectory(test_msshtunnel)

@@ -97,7 +97,6 @@ void SShTunnel::close()
 
 SShConfig SShTunnel::config() const
 {
-    Q_ASSERT(m_ssh->state() == QProcess::Running);
     return m_config;
 }
 

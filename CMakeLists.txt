@@ -2,6 +2,8 @@ if (POLICY CMP0048)
   cmake_policy(SET CMP0048 NEW)
 endif ()
 
+cmake_minimum_required(VERSION 3.5)
+
 project(msshtunnel
   VERSION 0.0.1
   DESCRIPTION "Milo SSH Tunnel"
@@ -25,8 +27,8 @@ target_include_directories(msshtunnel
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 )
 
-target_link_libraries(msshtunnel
-  Qt5::Core
-)
+qt5_use_modules(msshtunnel Core)
 
+enable_testing()
 add_subdirectory(test_msshtunnel)
+add_test(NAME MSSHTunnelTest COMMAND msshtunnel_test)

@@ -16,19 +16,18 @@ set(SOURCES sshtunnel.h sshtunnel.cpp)
 
 set(OTHER_FILES README.md msshtunnel.doxyfile)
 
-add_library(msshtunnel OBJECT ${SOURCES} ${OTHER_FILES})
+add_library(msshtunnel STATIC ${SOURCES} ${OTHER_FILES})
 
 # Defines
 target_compile_definitions(msshtunnel PUBLIC MSSHTUNNEL_LIB)
 
 target_include_directories(msshtunnel
   PUBLIC
-  $<INSTALL_INTERFACE:include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 )
 
-qt5_use_modules(msshtunnel Core)
+target_link_libraries(msshtunnel
+  Qt5::Core
+)
 
-enable_testing()
 add_subdirectory(test_msshtunnel)
-add_test(NAME MSSHTunnelTest COMMAND msshtunnel_test)
